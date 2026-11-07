@@ -53,14 +53,14 @@ a{color:var(--gold-400)}
 
 /* ---------- access pass ---------- */
 .ticket{max-width:400px;margin:0 auto;border-radius:24px;padding:11px;background:var(--green);border:3px solid var(--gold-500);box-shadow:0 30px 60px -24px rgba(0,0,0,.75)}
-.ticket-in{border:1.5px solid rgba(210,174,102,.45);border-radius:16px;padding:30px 20px 22px;text-align:center}
+.ticket-in{border:1.5px solid rgba(210,174,102,.45);border-radius:16px;padding:34px 20px 22px;text-align:center}
 .mono{width:112px;height:112px;margin:0 auto 22px;border-radius:50%;border:3px solid var(--gold-500);display:grid;place-items:center;
   font-family:var(--caps);font-weight:800;font-size:46px;color:var(--gold-500);letter-spacing:.01em;line-height:1}
 .mono.sm{width:72px;height:72px;font-size:28px;border-width:2px;margin-bottom:14px}
 .names{font-family:var(--caps);font-weight:700;font-size:clamp(23px,7.2vw,30px);letter-spacing:.06em;color:var(--gold-500);white-space:nowrap}
 .sub{font-family:var(--caps);font-weight:500;font-size:clamp(13px,4.1vw,17px);letter-spacing:.08em;color:var(--cream);margin-top:6px}
 .rule{width:62%;height:3px;background:var(--gold-500);margin:22px auto 24px;border-radius:2px}
-.t-title{font-family:var(--caps);font-weight:800;font-size:clamp(40px,12vw,52px);letter-spacing:.06em;line-height:1;color:var(--cream)}
+.t-title{font-family:var(--caps);font-weight:800;font-size:clamp(16px,5.4vw,26px);letter-spacing:.05em;line-height:1.1;color:var(--cream);white-space:nowrap}
 .kicker{font-family:var(--caps);font-weight:700;font-size:clamp(14px,4.3vw,18px);letter-spacing:.08em;color:var(--gold-500);margin-top:12px}
 .pill{width:88%;margin:22px auto 0;padding:12px 14px;border-radius:999px;background:var(--burg-700);color:var(--cream);
   font-family:var(--caps);font-weight:700;font-size:clamp(13px,3.9vw,15px);letter-spacing:.06em}
@@ -68,7 +68,7 @@ a{color:var(--gold-400)}
 .t-meta{font-family:var(--caps);font-weight:500;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-500);margin-top:8px}
 .t-qr{width:min(250px,68vw);margin:22px auto 0;background:#fff;border-radius:16px;padding:16px}
 .t-qr svg{display:block;width:100%;height:auto}
-.t-foot{font-family:var(--caps);font-weight:700;font-size:clamp(12px,3.8vw,16px);letter-spacing:.05em;color:var(--cream);margin-top:24px;white-space:nowrap}
+.t-foot{font-family:var(--caps);font-weight:700;font-size:clamp(11px,3.4vw,16px);letter-spacing:.04em;color:var(--cream);margin-top:24px;white-space:nowrap}
 .t-addr{display:inline-block;margin-top:8px;font-family:var(--caps);font-weight:500;font-size:clamp(11px,3.4vw,13px);letter-spacing:.06em;color:var(--gold-500);text-decoration:underline;text-decoration-color:rgba(210,174,102,.45);text-underline-offset:4px}
 .t-rules{margin:16px auto 0;padding-top:14px;border-top:1px solid rgba(210,174,102,.3);font-family:var(--caps);font-weight:600;font-size:clamp(9px,2.8vw,12px);letter-spacing:.07em;line-height:1.8;color:var(--cream)}
 .t-rules span{display:block;white-space:nowrap}
@@ -217,7 +217,7 @@ function loadScript(src) {
 
 /* ======================= shared pieces ======================= */
 const mono = sm => `<div class="mono${sm ? ' sm' : ''}" aria-hidden="true">JM</div>`;
-const heading = () => `${mono()}<p class="names">MARY &amp; JOSEPH</p><p class="sub">TRADITIONAL WEDDING</p><div class="rule"></div>`;
+const heading = () => `<p class="names">MARY &amp; JOSEPH</p><p class="sub">TRADITIONAL WEDDING</p><div class="rule"></div>`;
 const shell = inner => `<div class="wrap"><div class="ticket"><div class="ticket-in">${heading()}${inner}</div></div></div>`;
 const loadingView = msg => shell(`<div class="spin"></div><p class="small">${esc(msg)}</p>`);
 const notice = (title, body, extra) => shell(`<p class="lead">${esc(title)}</p><p class="small mt">${esc(body)}</p>${extra ? `<div class="mt">${extra}</div>` : ''}`);
@@ -245,8 +245,7 @@ function renderCard(g, url, preview) {
   app.innerHTML = `<div class="wrap">
     <article class="ticket"><div class="ticket-in">
       ${heading()}
-      <h1 class="t-title">ASO EBI</h1>
-      <p class="kicker">DIGITAL ACCESS PASS</p>
+      <h1 class="t-title">DIGITAL ACCESS PASS</h1>
       <p class="pill">PAYMENT VERIFIED</p>
       <h2 class="t-guest">${esc(g.name)}</h2>
       ${meta ? `<p class="t-meta">${meta}</p>` : ''}
@@ -272,7 +271,7 @@ async function viewCard(raw) {
   } catch (e) {
     if (e.code === 'INVALID') {
       store.del('mj_card_' + t);
-      app.innerHTML = notice('This card is not active', 'If you have paid for your Aso Ebi, please contact the wedding coordinator and they will check your details.');
+      app.innerHTML = notice('This card is not active', 'If you think this is a mistake, please contact the wedding coordinator and they will check your details.');
     } else if (!cached) {
       app.innerHTML = notice('Your card could not load', e.message, `<button class="btn" onclick="location.reload()">Try again</button>`);
     }
@@ -288,7 +287,7 @@ function viewLogin(pref) {
   const roles = [['FABRIC', 'Fabric'], ['ENTRY', 'Entry'], ['ADMIN', 'Admin']];
   let role = pref === 'admin' ? 'ADMIN' : (store.get('mj_lastrole') || 'ENTRY');
   app.innerHTML = `<div class="wrap">
-    <div class="center mb">${mono(true)}<h1 class="bar-title">Staff sign-in</h1></div>
+    <div class="center mb"><h1 class="bar-title">Staff sign-in</h1></div>
     <form class="panel" id="lf" autocomplete="off" novalidate>
       <span class="label" style="margin-top:0">Station</span>
       <div class="seg" id="seg" role="radiogroup">${roles.map(([k, l]) => `<button type="button" role="radio" aria-checked="${k === role}" data-r="${k}" class="${k === role ? 'on' : ''}">${l}</button>`).join('')}</div>
