@@ -5,22 +5,24 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex, nofollow">
 <meta name="referrer" content="no-referrer">
-<meta name="theme-color" content="#232A17">
+<meta name="theme-color" content="#10291F">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="M&amp;J Access">
 <title>Mary &amp; Joseph · 25 March 2027</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,500;0,600;1,500&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@600&family=Montserrat:wght@500;600;700;800&family=Karla:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --olive-950:#171B0F; --olive-900:#232A17; --olive-800:#2E3620; --olive-700:#3D4729; --olive-600:#556035; --sage:#B9BF99;
-  --burg-900:#3E0F1A; --burg-800:#561626; --burg-700:#6B1E2E; --burg-500:#8E2D41;
-  --gold-300:#F1E2B0; --gold-400:#E3CB8A; --gold-500:#C9A75A; --gold-600:#A88638; --gold-700:#7E6328;
-  --cream:#F7F0DE; --ink:#1A1D12;
+  --olive-950:#0A1D15; --olive-900:#10291F; --olive-800:#163528; --olive-700:#1D4232; --olive-600:#2A5844; --sage:#B7C4B6;
+  --green:#10291F;
+  --burg-900:#3E0F1A; --burg-800:#561626; --burg-700:#5E2335; --burg-500:#8E2D41;
+  --gold-300:#F1E2B0; --gold-400:#E3CB8A; --gold-500:#D2AE66; --gold-600:#A88638; --gold-700:#7E6328;
+  --cream:#F5ECD7; --ink:#1A1D12;
   --ok:#2F7D3A; --bad:#A3172F; --warn:#B26A12;
   --serif:'Cormorant Garamond', Georgia, 'Times New Roman', serif;
+  --caps:'Montserrat', -apple-system, 'Helvetica Neue', Arial, sans-serif;
   --sans:'Karla', -apple-system, 'Helvetica Neue', Arial, sans-serif;
   --gold:linear-gradient(135deg,#7E6328 0%,#C9A75A 22%,#F1E2B0 45%,#C9A75A 62%,#8E6E2E 100%);
   --line:rgba(227,203,138,.28);
@@ -31,7 +33,7 @@ html,body{min-height:100%}
 html{scroll-padding-top:env(safe-area-inset-top,0px);-webkit-text-size-adjust:100%}
 body{
   font-family:var(--sans);font-size:16px;line-height:1.5;color:var(--gold-300);
-  background:var(--olive-950) radial-gradient(120% 60% at 50% 0%,#3D4729 0%,#232A17 55%,#171B0F 100%) no-repeat;
+  background:var(--olive-950) radial-gradient(120% 60% at 50% 0%,#1D4232 0%,#10291F 55%,#0A1D15 100%) no-repeat;
   -webkit-font-smoothing:antialiased;
   padding:env(safe-area-inset-top,0px) env(safe-area-inset-right,0px) env(safe-area-inset-bottom,0px) env(safe-area-inset-left,0px);
 }
@@ -49,46 +51,28 @@ a{color:var(--gold-400)}
 .err{color:#F2A6B4;font-size:14px;min-height:1.2em;margin:8px 0}
 .mt{margin-top:14px}.mb{margin-bottom:14px}
 
-/* ---------- card ---------- */
-.card{border-radius:22px;padding:3px;background:var(--gold);box-shadow:0 30px 60px -24px rgba(0,0,0,.75)}
-.card-inner{position:relative;overflow:hidden;border-radius:19px;padding:32px 24px 26px;text-align:center;
-  background:
-    radial-gradient(90% 45% at 50% 0%,rgba(201,167,90,.2),transparent 70%),
-    repeating-linear-gradient(45deg,rgba(255,255,255,.02) 0 2px,transparent 2px 9px),
-    linear-gradient(180deg,#3D4729 0%,#2E3620 60%,#252C19 100%)}
-.card-inner::before,.card-inner::after{content:"";position:absolute;pointer-events:none;border-radius:13px}
-.card-inner::before{inset:10px;border:1px solid rgba(227,203,138,.5)}
-.card-inner::after{inset:14px;border:1px solid rgba(227,203,138,.16)}
-.crest{width:66px;height:66px;margin:0 auto 14px;border-radius:50%;display:grid;place-items:center;
-  background:radial-gradient(circle at 35% 30%,var(--burg-500),var(--burg-800));
-  box-shadow:0 0 0 2px var(--gold-500),0 0 0 6px var(--olive-800),0 0 0 7px rgba(201,167,90,.55);
-  font-family:var(--serif);font-size:25px;font-weight:600;color:var(--gold-300)}
-.crest em{font-style:italic;font-weight:500;color:var(--gold-500);font-size:.78em;margin:0 1px}
-.pre{font-family:var(--serif);font-style:italic;font-size:18px;color:var(--gold-400)}
-.couple{font-family:var(--serif);font-weight:500;font-size:clamp(40px,12vw,50px);line-height:1.02;margin:4px 0 12px;
-  background:var(--gold);-webkit-background-clip:text;background-clip:text;color:transparent}
-.date{font-family:var(--serif);font-size:20px;color:var(--cream)}
-.venue{font-size:14px;color:var(--gold-400);margin-top:2px;letter-spacing:.02em}
-.flourish{display:flex;align-items:center;gap:10px;max-width:200px;margin:18px auto;color:var(--gold-500);font-size:10px}
-.flourish::before,.flourish::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--gold-500),transparent)}
-/* name band — woven aso-oke strip: burgundy warp with gold threads */
-.band{position:relative;margin:0 -24px;padding:16px 28px 18px;
-  background:
-    repeating-linear-gradient(90deg,transparent 0 22px,rgba(201,167,90,.55) 22px 23px,transparent 23px 26px,rgba(201,167,90,.3) 26px 27px,transparent 27px 48px),
-    linear-gradient(180deg,var(--burg-700),var(--burg-800));
-  border-block:1px solid var(--gold-600);box-shadow:inset 0 1px 0 rgba(241,226,176,.18)}
-.band .pre{font-size:16px}
-.guest-name{font-family:var(--serif);font-weight:600;font-size:clamp(28px,8.5vw,34px);line-height:1.1;color:var(--cream);overflow-wrap:anywhere;text-shadow:0 1px 8px rgba(0,0,0,.4)}
-.meta{font-size:14px;color:var(--gold-300);margin-top:6px}
-.qr-frame{width:min(236px,70vw);margin:24px auto 12px;padding:9px;border-radius:14px;background:var(--gold);box-shadow:0 10px 24px -10px rgba(0,0,0,.7)}
-.qr{background:var(--cream);border-radius:8px;padding:10px}
-.qr svg{display:block;width:100%;height:auto}
-.note{font-family:var(--serif);font-size:17px;line-height:1.35;color:var(--cream)}
-.chips{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:16px}
-.chip{font-size:13px;padding:6px 12px;border-radius:999px;border:1px solid rgba(227,203,138,.4);color:var(--gold-300)}
-.chip.done{background:var(--gold-500);border-color:transparent;color:var(--olive-950);font-weight:700}
+/* ---------- access pass ---------- */
+.ticket{max-width:400px;margin:0 auto;border-radius:24px;padding:11px;background:var(--green);border:3px solid var(--gold-500);box-shadow:0 30px 60px -24px rgba(0,0,0,.75)}
+.ticket-in{border:1.5px solid rgba(210,174,102,.45);border-radius:16px;padding:30px 20px 22px;text-align:center}
+.mono{width:112px;height:112px;margin:0 auto 22px;border-radius:50%;border:3px solid var(--gold-500);display:grid;place-items:center;
+  font-family:var(--caps);font-weight:800;font-size:46px;color:var(--gold-500);letter-spacing:.01em;line-height:1}
+.mono.sm{width:72px;height:72px;font-size:28px;border-width:2px;margin-bottom:14px}
+.names{font-family:var(--caps);font-weight:700;font-size:clamp(23px,7.2vw,30px);letter-spacing:.06em;color:var(--gold-500);white-space:nowrap}
+.sub{font-family:var(--caps);font-weight:500;font-size:clamp(13px,4.1vw,17px);letter-spacing:.08em;color:var(--cream);margin-top:6px}
+.rule{width:62%;height:3px;background:var(--gold-500);margin:22px auto 24px;border-radius:2px}
+.t-title{font-family:var(--caps);font-weight:800;font-size:clamp(40px,12vw,52px);letter-spacing:.06em;line-height:1;color:var(--cream)}
+.kicker{font-family:var(--caps);font-weight:700;font-size:clamp(14px,4.3vw,18px);letter-spacing:.08em;color:var(--gold-500);margin-top:12px}
+.pill{width:88%;margin:22px auto 0;padding:12px 14px;border-radius:999px;background:var(--burg-700);color:var(--cream);
+  font-family:var(--caps);font-weight:700;font-size:clamp(13px,3.9vw,15px);letter-spacing:.06em}
+.t-guest{font-family:var(--caps);font-weight:700;font-size:clamp(23px,7vw,30px);letter-spacing:.05em;text-transform:uppercase;color:var(--cream);margin-top:24px;line-height:1.15;overflow-wrap:anywhere}
+.t-meta{font-family:var(--caps);font-weight:500;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--gold-500);margin-top:8px}
+.t-qr{width:min(250px,68vw);margin:22px auto 0;background:#fff;border-radius:16px;padding:16px}
+.t-qr svg{display:block;width:100%;height:auto}
+.t-foot{font-family:var(--caps);font-weight:700;font-size:clamp(12px,3.8vw,16px);letter-spacing:.05em;color:var(--cream);margin-top:24px;white-space:nowrap}
+.t-status{font-family:var(--caps);font-weight:500;font-size:clamp(10px,3vw,12px);letter-spacing:.08em;color:var(--gold-500);margin-top:12px}
+.t-status .done{color:var(--cream);font-weight:700}
+.lead{font-family:var(--caps);font-weight:600;font-size:17px;line-height:1.45;color:var(--cream)}
 .hint{text-align:center;font-size:14px;color:var(--sage);margin:18px auto 0;max-width:320px}
-.lead{font-family:var(--serif);font-size:19px;color:var(--cream);line-height:1.4}
 
 /* ---------- controls ---------- */
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:48px;padding:0 20px;border-radius:12px;
@@ -108,7 +92,7 @@ select.input{appearance:none;-webkit-appearance:none}
 .seg>.on{background:var(--burg-700);box-shadow:inset 0 0 0 1px var(--gold-600);color:var(--cream)}
 .bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
 .bar-who{font-size:13px;color:var(--sage)}
-.bar-title{font-family:var(--serif);font-weight:600;font-size:28px;line-height:1.1;color:var(--cream)}
+.bar-title{font-family:var(--caps);font-weight:700;font-size:24px;letter-spacing:.02em;line-height:1.1;color:var(--cream)}
 .spin{width:28px;height:28px;margin:24px auto;border:2px solid rgba(227,203,138,.25);border-top-color:var(--gold-500);border-radius:50%;animation:sp .9s linear infinite}
 .spin.lg{width:56px;height:56px;border-width:3px;border-color:rgba(255,255,255,.25);border-top-color:#fff}
 @keyframes sp{to{transform:rotate(360deg)}}
@@ -169,6 +153,195 @@ select.input{appearance:none;-webkit-appearance:none}
 </head>
 <body>
 <main id="app"></main>
+
+<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
+<script>
+'use strict';
+
+/* ======================= CONFIG ======================= */
+// Paste your Apps Script web app URL here (Deploy → Web app → URL ending in /exec).
+const API_URL = 'https://script.google.com/macros/s/AKfycbyPmGD7rRzsysSMls94JOj59AMpmdElWocKoiR4wQwic2JWDSVHWWhFlBZhGS3wMBRJmg/exec';
+const JSQR_URL = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';
+const EVENT = { foot: '25 MARCH 2027 &nbsp;|&nbsp; MERIDIAN GRAND' };
+/* ====================================================== */
+
+const $ = (s, el = document) => el.querySelector(s);
+const app = $('#app');
+const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const store = {
+  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
+  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
+  del(k) { try { localStorage.removeItem(k); } catch (e) {} }
+};
+const session = () => store.get('mj_session');
+let timers = [], adminPoll = null;
+const later = (fn, ms) => { timers.push(setTimeout(fn, ms)); };
+
+function toast(msg) {
+  let t = $('#toast');
+  if (!t) { t = document.createElement('div'); t.id = 'toast'; t.className = 'toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); }
+  t.textContent = msg; t.classList.add('on');
+  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 2800);
+}
+
+async function api(action, data) {
+  if (!/^https:\/\//.test(API_URL)) throw Object.assign(new Error('Not connected yet: set API_URL in index.html'), { code: 'CONFIG' });
+  let res, j;
+  try { res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(Object.assign({ action }, data || {})) }); }
+  catch (e) { throw Object.assign(new Error('No connection. Check signal or Wi-Fi and try again.'), { code: 'NETWORK' }); }
+  try { j = await res.json(); }
+  catch (e) { throw Object.assign(new Error('Server did not respond properly. Try again.'), { code: 'SERVER' }); }
+  if (!j.ok) throw Object.assign(new Error(j.message || j.error), { code: j.error });
+  return j;
+}
+
+function authFail(e) {
+  if (e.code !== 'SESSION' && e.code !== 'FORBIDDEN') return false;
+  store.del('mj_session'); toast(e.message);
+  if (location.hash === '#staff') route(); else location.hash = '#staff';
+  return true;
+}
+
+const loaded = {};
+function loadScript(src) {
+  if (!loaded[src]) loaded[src] = new Promise((res, rej) => {
+    const s = document.createElement('script'); s.src = src; s.onload = res;
+    s.onerror = () => { delete loaded[src]; rej(new Error('Could not load the scanner. Check connection.')); };
+    document.head.appendChild(s);
+  });
+  return loaded[src];
+}
+
+/* ======================= shared pieces ======================= */
+const mono = sm => `<div class="mono${sm ? ' sm' : ''}" aria-hidden="true">JM</div>`;
+const heading = () => `${mono()}<p class="names">MARY &amp; JOSEPH</p><p class="sub">TRADITIONAL WEDDING</p><div class="rule"></div>`;
+const shell = inner => `<div class="wrap"><div class="ticket"><div class="ticket-in">${heading()}${inner}</div></div></div>`;
+const loadingView = msg => shell(`<div class="spin"></div><p class="small">${esc(msg)}</p>`);
+const notice = (title, body, extra) => shell(`<p class="lead">${esc(title)}</p><p class="small mt">${esc(body)}</p>${extra ? `<div class="mt">${extra}</div>` : ''}`);
+
+function qrSvg(text) {
+  const q = qrcode(0, 'Q'); q.addData(text); q.make();
+  const n = q.getModuleCount(); let d = '';
+  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) d += `M${c} ${r}h1v1h-1z`;
+  return `<svg viewBox="0 0 ${n} ${n}" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img" aria-label="Your personal access QR code">
+    <rect width="${n}" height="${n}" fill="#FFFFFF"/><path d="${d}" fill="#10291F"/></svg>`;
+}
+const cardUrl = t => `${location.origin}${location.pathname}?t=${encodeURIComponent(t)}`;
+function extractToken(text) {
+  const s = String(text || '');
+  const m = s.match(/[?&]t=([a-f0-9]{32})\b/i) || s.match(/^\s*([a-f0-9]{32})\s*$/i);
+  return m ? m[1].toLowerCase() : null;
+}
+
+/* ======================= guest card ======================= */
+function renderCard(g, url, preview) {
+  const meta = [g.table && `Table ${g.table}`, g.pkg].filter(Boolean).map(esc).join(' &nbsp;|&nbsp; ');
+  const status = `<span class="${g.fabric ? 'done' : ''}">${g.fabric ? 'ASO EBI COLLECTED' : 'ASO EBI TO COLLECT'}</span> &nbsp;•&nbsp; <span class="${g.entry ? 'done' : ''}">${g.entry ? 'CHECKED IN' : 'ENTRY VALID'}</span>`;
+  let qr;
+  try { qr = qrSvg(url); } catch (e) { qr = '<p class="small" style="color:#10291F">QR could not be drawn. Reload the page.</p>'; }
+  app.innerHTML = `<div class="wrap">
+    <article class="ticket"><div class="ticket-in">
+      ${heading()}
+      <h1 class="t-title">ASO EBI</h1>
+      <p class="kicker">DIGITAL ACCESS PASS</p>
+      <p class="pill">PAYMENT VERIFIED</p>
+      <h2 class="t-guest">${esc(g.name)}</h2>
+      ${meta ? `<p class="t-meta">${meta}</p>` : ''}
+      <div class="t-qr">${qr}</div>
+      <p class="t-foot">${EVENT.foot}</p>
+      <p class="t-status">${status}</p>
+    </div></article>
+    <p class="hint">${preview ? 'Design preview. No guest data is shown.' : 'Take a screenshot so your pass opens without signal. It is unique to you, so please do not share it.'}</p>
+  </div>`;
+}
+
+async function viewCard(raw) {
+  const t = String(raw).trim().toLowerCase();
+  const url = cardUrl(t);
+  const cached = store.get('mj_card_' + t);
+  if (cached) renderCard(cached, url); else app.innerHTML = loadingView('Opening your card');
+  try {
+    const j = await api('card', { t });
+    store.set('mj_card_' + t, j.guest);
+    renderCard(j.guest, url);
+  } catch (e) {
+    if (e.code === 'INVALID') {
+      store.del('mj_card_' + t);
+      app.innerHTML = notice('This card is not active', 'If you have paid for your Aso Ebi, please contact the wedding coordinator and they will check your details.');
+    } else if (!cached) {
+      app.innerHTML = notice('Your card could not load', e.message, `<button class="btn" onclick="location.reload()">Try again</button>`);
+    }
+  }
+}
+
+function viewLanding() {
+  app.innerHTML = shell(`<p class="lead">Please open your personal access card using the link sent to you on WhatsApp.</p>`);
+}
+
+/* ======================= staff sign-in ======================= */
+function viewLogin(pref) {
+  const roles = [['FABRIC', 'Fabric'], ['ENTRY', 'Entry'], ['ADMIN', 'Admin']];
+  let role = pref === 'admin' ? 'ADMIN' : (store.get('mj_lastrole') || 'ENTRY');
+  app.innerHTML = `<div class="wrap">
+    <div class="center mb">${mono(true)}<h1 class="bar-title">Staff sign-in</h1></div>
+    <form class="panel" id="lf" autocomplete="off" novalidate>
+      <span class="label" style="margin-top:0">Station</span>
+      <div class="seg" id="seg" role="radiogroup">${roles.map(([k, l]) => `<button type="button" role="radio" aria-checked="${k === role}" data-r="${k}" class="${k === role ? 'on' : ''}">${l}</button>`).join('')}</div>
+      <label class="label" for="ln">Your name</label>
+      <input class="input" id="ln" maxlength="40" value="${esc(store.get('mj_lastname') || '')}" autocomplete="name">
+      <label class="label" for="lp">Passcode</label>
+      <input class="input" id="lp" type="password" autocomplete="current-password">
+      <p class="err" id="le" role="alert"></p>
+      <button class="btn block" id="lb" type="submit">Sign in</button>
+    </form></div>`;
+  $('#seg').onclick = e => {
+    const b = e.target.closest('[data-r]'); if (!b) return;
+    role = b.dataset.r;
+    document.querySelectorAll('#seg [data-r]').forEach(x => { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-checked', on); });
+  };
+  $('#lf').onsubmit = async e => {
+    e.preventDefault();
+    const staff = $('#ln').value.trim(), pin = $('#lp').value;
+    if (!staff) return void ($('#le').textContent = 'Enter your name so scans show who checked each guest.');
+    if (!pin) return void ($('#le').textContent = 'Enter the passcode for this station.');
+    $('#lb').disabled = true; $('#lb').textContent = 'Signing in…'; $('#le').textContent = '';
+    try {
+      const j = await api('login', { role, staff, pin });
+      store.set('mj_session', { session: j.session, role: j.role, staff: j.staff });
+      store.set('mj_lastrole', role); store.set('mj_lastname', staff);
+      location.hash = j.role === 'ADMIN' ? '#admin' : '#scan-' + j.role.toLowerCase();
+    } catch (err) {
+      $('#le').textContent = err.message; $('#lb').disabled = false; $('#lb').textContent = 'Sign in';
+    }
+  };
+}
+
+async function signOut() {
+  const s = session(); store.del('mj_session');
+  if (s) api('logout', { session: s.session }).catch(() => {});
+  location.hash = '#staff';
+}
+
+/* ======================= scanner ======================= */
+const MODES = {
+  fabric: { title: 'Aso Ebi collection', ok: 'Hand over fabric', used: 'Fabric already collected', verb: 'Mark collected' },
+  entry: { title: 'Wedding entry', ok: 'Welcome in', used: 'Already checked in', verb: 'Check in' }
+};
+const cam = { stream: null, raf: 0, busy: false, key: '', keyAt: 0, mode: 'entry', canvas: null, ctx: null, lastTick: 0, audio: null, count: 0 };
+
+function viewScanner(mode) {
+  const s = session(); const M = MODES[mode];
+  cam.mode = mode; cam.busy = false; cam.count = 0;
+  app.innerHTML = `<div class="wrap">
+    <header class="bar">
+      <div><p class="bar-who">Signed in as ${esc(s.staff)}</p><h1 class="bar-title">${M.title}</h1></div>
+      <button class="btn ghost sm" id="out">Sign out</button>
+    </header>
+    ${s.role === 'ADMIN' ? `<nav class="seg mb"><a href="#scan-fabric" class="${mode === 'fabric' ? 'on' : ''}">Fabric</a><a href="#scan-entry" class="${mode === 'entry' ? 'on' : ''}">Entry</a><a href="#admin">Dashboard</a></nav>` : ''}
+    <div class="viewport">
+      <video id="video" playsinline muted autoplay></video>
+      <div class="reticle" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+      <div class="start" id="start"><button class="btn" id="go">Start scanning</button>
 
 <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
 <script>
