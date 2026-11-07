@@ -523,4 +523,149 @@ function waLink(g) {
 const A = { guests: [], q: '', f: 'all' };
 const FILTERS = {
   all: ['All guests', () => true],
-  issue: ['Paid,
+  issue: ['Paid, no card yet', g => g.paid && !g.issued],
+  send: ['Card not sent', g => g.paid && g.issued && !g.sent],
+  pending: ['Payment pending', g => !g.paid],
+  fabricTodo: ['Fabric not collected', g => g.paid && !g.fabric],
+  arrived: ['Checked in', g => !!g.entry],
+  notArrived: ['Not arrived', g => g.paid && !g.entry]
+};
+
+function viewAdmin() {
+  const s = session();
+  app.innerHTML = `<div class="wrap wide">
+    <header class="bar">
+      <div><p class="bar-who">Admin: ${esc(s.staff)}</p><h1 class="bar-title">Guest dashboard</h1></div>
+      <button class="btn ghost sm" id="out">Sign out</button>
+    </header>
+    <nav class="seg mb"><a href="#scan-fabric">Scan fabric</a><a href="#scan-entry">Scan entry</a><a href="#admin" class="on">Dashboard</a></nav>
+    <div class="stats" id="stats"></div>
+    <button class="btn block mt" id="issue">Issue cards to confirmed guests</button>
+    <div class="filters">
+      <input class="input" id="aq" type="search" placeholder="Name, ID, table or phone" value="${esc(A.q)}">
+      <select class="input" id="af" aria-label="Filter">${Object.entries(FILTERS).map(([k, [l]]) => `<option value="${k}" ${k === A.f ? 'selected' : ''}>${l}</option>`).join('')}</select>
+      <button class="btn ghost sm" id="ar" style="min-height:50px" aria-label="Refresh">↻</button>
+    </div>
+    <div id="list"><div class="spin"></div></div>
+  </div>`;
+  $('#out').onclick = signOut;
+  $('#aq').oninput = e => { A.q = e.target.value; renderList(); };
+  $('#af').onchange = e => { A.f = e.target.value; renderList(); };
+  $('#ar').onclick = () => loadGuests();
+  $('#issue').onclick = issueAll;
+  $('#list').onclick = onListClick;
+  loadGuests();
+  adminPoll = setInterval(() => { if (!document.hidden && !document.querySelector('.more[open]')) loadGuests(true); }, 45000);
+}
+
+async function loadGuests(silent) {
+  try {
+    const j = await api('guests', { session: session().session });
+    A.guests = j.guests; renderStats(); renderList();
+  } catch (e) {
+    if (authFail(e)) return;
+    if (silent) toast(e.message); else if ($('#list')) $('#list').innerHTML = `<p class="err">${esc(e.message)}</p>`;
+  }
+}
+
+function renderStats() {
+  const el = $('#stats'); if (!el) return;
+  const paid = A.guests.filter(g => g.paid), P = paid.length;
+  const cell = (n, label, of) => `<div class="stat"><b>${n}</b><span>${label}</span>${of != null ? `<br><small>of ${of}</small>` : ''}</div>`;
+  el.innerHTML = cell(A.guests.length, 'On the list') + cell(P, 'Paid') + cell(paid.filter(g => g.issued).length, 'Cards issued', P) +
+    cell(paid.filter(g => g.sent).length, 'Sent', P) + cell(paid.filter(g => g.fabric).length, 'Fabric collected', P) +
+    cell(paid.filter(g => g.entry).length, 'Checked in', P);
+}
+
+function renderList() {
+  const el = $('#list'); if (!el) return;
+  const q = A.q.trim().toLowerCase(), fn = FILTERS[A.f][1];
+  const rows = A.guests.filter(g => fn(g) && (!q || [g.name, g.id, g.table, g.phone].join(' ').toLowerCase().includes(q)));
+  el.innerHTML = rows.length ? rows.map(guestRow).join('')
+    : `<p class="empty">${A.guests.length ? 'No guests match this search or filter.' : 'No guests yet. Add them to the Guests tab of the Google Sheet, then refresh.'}</p>`;
+}
+
+function guestRow(g) {
+  const badge = (cls, text) => `<span class="b ${cls}">${esc(text)}</span>`;
+  const badges = [
+    g.paid ? badge('g', 'Paid') : badge('r', g.payment || 'Pending'),
+    g.paid && badge(g.issued ? 'y' : '', g.issued ? 'Card issued' : 'No card yet'),
+    g.issued && badge(g.sent ? 'y' : '', g.sent ? `Sent ${g.sent}` : 'Not sent'),
+    g.fabric && badge('g', `Fabric ${g.fabric}`),
+    g.entry && badge('g', `Arrived ${g.entry}`)
+  ].filter(Boolean).join('');
+  const sub = [g.id, g.table && `Table ${g.table}`, g.pkg, g.side].filter(Boolean).map(esc).join(', ');
+  const actions = g.paid && g.issued ? `<div class="g-actions">
+      <button class="btn sm" data-a="wa">Send on WhatsApp</button>
+      <button class="btn ghost sm" data-a="copy">Copy link</button>
+      <a class="btn ghost sm" href="${esc(g.link)}" target="_blank" rel="noopener">View card</a>
+      <details class="more"><summary class="btn ghost sm">More</summary><div class="menu">
+        ${g.fabric ? '<button data-a="reset-fabric">Undo fabric collection</button>' : ''}
+        ${g.entry ? '<button data-a="reset-entry">Undo check-in</button>' : ''}
+        ${!g.sent ? '<button data-a="sent">Mark as sent</button>' : ''}
+        <button data-a="revoke" class="danger">Replace QR code (old one stops working)</button>
+      </div></details></div>` : '';
+  return `<div class="g" data-id="${esc(g.id)}"><p class="g-name">${esc(g.name)}</p><p class="g-sub">${sub}</p><div class="badges">${badges}</div>${actions}</div>`;
+}
+
+async function onListClick(e) {
+  const btn = e.target.closest('[data-a]'); if (!btn) return;
+  const id = btn.closest('.g').dataset.id, g = A.guests.find(x => x.id === id); if (!g) return;
+  const a = btn.dataset.a, sid = session().session;
+  try {
+    if (a === 'wa') {
+      window.open(waLink(g), '_blank');
+      if (!g.phone) toast('No number on file. Choose the contact in WhatsApp.');
+      if (!g.sent) { await api('markSent', { session: sid, id }); g.sent = 'just now'; renderStats(); renderList(); }
+    } else if (a === 'copy') {
+      try { await navigator.clipboard.writeText(g.link); toast('Card link copied'); }
+      catch (err) { prompt('Copy this card link', g.link); }
+    } else if (a === 'sent') {
+      await api('markSent', { session: sid, id }); toast('Marked as sent'); loadGuests(true);
+    } else if (a.indexOf('reset-') === 0) {
+      const mode = a.slice(6);
+      if (!confirm(`Undo ${mode === 'fabric' ? 'fabric collection' : 'check-in'} for ${g.name}? Their QR will work again for this.`)) return;
+      await api('reset', { session: sid, id, mode }); toast('Undone'); loadGuests(true);
+    } else if (a === 'revoke') {
+      if (!confirm(`Replace ${g.name}'s QR code? The old card stops working immediately and you will need to send the new link.`)) return;
+      await api('revoke', { session: sid, id }); toast('New code issued. Send it again.'); loadGuests(true);
+    }
+  } catch (err) { if (!authFail(err)) toast(err.message); }
+}
+
+async function issueAll() {
+  const btn = $('#issue');
+  const todo = A.guests.filter(FILTERS.issue[1]).length;
+  if (!confirm(todo ? `Create cards for ${todo} paid guest(s) without one?` : 'Rebuild links for all confirmed guests?')) return;
+  btn.disabled = true; btn.textContent = 'Issuing…';
+  try { const j = await api('issue', { session: session().session }); toast(`${j.issued} new card(s) issued`); await loadGuests(true); }
+  catch (e) { if (!authFail(e)) toast(e.message); }
+  finally { btn.disabled = false; btn.textContent = 'Issue cards to confirmed guests'; }
+}
+
+/* ======================= router ======================= */
+function route() {
+  timers.forEach(clearTimeout); timers = [];
+  if (adminPoll) { clearInterval(adminPoll); adminPoll = null; }
+  stopCamera(); hideResult();
+  const p = new URLSearchParams(location.search);
+  const h = location.hash.slice(1);
+  window.scrollTo(0, 0);
+  if (p.get('t')) return viewCard(p.get('t'));
+  if (p.has('preview')) return renderCard({ name: 'Guest Name', table: '', pkg: '' }, cardUrl('preview'), true);
+  if (['staff', 'admin', 'scan-fabric', 'scan-entry'].indexOf(h) === -1) return viewLanding();
+  const s = session();
+  if (!s) return viewLogin(h);
+  if (h === 'scan-fabric' || h === 'scan-entry') {
+    const mode = h.slice(5);
+    if (s.role !== 'ADMIN' && s.role.toLowerCase() !== mode) return location.replace('#scan-' + s.role.toLowerCase());
+    return viewScanner(mode);
+  }
+  if (s.role === 'ADMIN') return viewAdmin();
+  location.replace('#scan-' + s.role.toLowerCase());
+}
+window.addEventListener('hashchange', route);
+route();
+</script>
+</body>
+</html>
