@@ -69,6 +69,9 @@ a{color:var(--gold-400)}
 .t-qr{width:min(250px,68vw);margin:22px auto 0;background:#fff;border-radius:16px;padding:16px}
 .t-qr svg{display:block;width:100%;height:auto}
 .t-foot{font-family:var(--caps);font-weight:700;font-size:clamp(12px,3.8vw,16px);letter-spacing:.05em;color:var(--cream);margin-top:24px;white-space:nowrap}
+.t-addr{display:inline-block;margin-top:8px;font-family:var(--caps);font-weight:500;font-size:clamp(11px,3.4vw,13px);letter-spacing:.06em;color:var(--gold-500);text-decoration:underline;text-decoration-color:rgba(210,174,102,.45);text-underline-offset:4px}
+.t-rules{margin:16px auto 0;padding-top:14px;border-top:1px solid rgba(210,174,102,.3);font-family:var(--caps);font-weight:600;font-size:clamp(9px,2.8vw,12px);letter-spacing:.07em;line-height:1.8;color:var(--cream)}
+.t-rules span{display:block;white-space:nowrap}
 .t-status{font-family:var(--caps);font-weight:500;font-size:clamp(10px,3vw,12px);letter-spacing:.08em;color:var(--gold-500);margin-top:12px}
 .t-status .done{color:var(--cream);font-weight:700}
 .lead{font-family:var(--caps);font-weight:600;font-size:17px;line-height:1.45;color:var(--cream)}
@@ -162,7 +165,7 @@ select.input{appearance:none;-webkit-appearance:none}
 // Paste your Apps Script web app URL here (Deploy → Web app → URL ending in /exec).
 const API_URL = 'https://script.google.com/macros/s/AKfycbyPmGD7rRzsysSMls94JOj59AMpmdElWocKoiR4wQwic2JWDSVHWWhFlBZhGS3wMBRJmg/exec';
 const JSQR_URL = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';
-const EVENT = { foot: '25 MARCH 2027 &nbsp;|&nbsp; MERIDIAN GRAND' };
+const EVENT = { foot: '25 MARCH 2027 &nbsp;|&nbsp; MERIDIAN GRAND', address: 'ADVENT WAY, LONDON N18 3AF', map: 'https://www.google.com/maps/search/?api=1&query=Meridian+Grand+Advent+Way+London+N18+3AF' };
 /* ====================================================== */
 
 const $ = (s, el = document) => el.querySelector(s);
@@ -249,6 +252,8 @@ function renderCard(g, url, preview) {
       ${meta ? `<p class="t-meta">${meta}</p>` : ''}
       <div class="t-qr">${qr}</div>
       <p class="t-foot">${EVENT.foot}</p>
+      <a class="t-addr" href="${EVENT.map}" target="_blank" rel="noopener">${EVENT.address}</a>
+      <p class="t-rules"><span>STRICTLY BY INVITATION &nbsp;•&nbsp; ADULTS ONLY</span><span>ADMIT ONE &nbsp;•&nbsp; NON-TRANSFERABLE</span></p>
       <p class="t-status">${status}</p>
     </div></article>
     <p class="hint">${preview ? 'Design preview. No guest data is shown.' : 'Take a screenshot so your pass opens without signal. It is unique to you, so please do not share it.'}</p>
@@ -284,195 +289,6 @@ function viewLogin(pref) {
   let role = pref === 'admin' ? 'ADMIN' : (store.get('mj_lastrole') || 'ENTRY');
   app.innerHTML = `<div class="wrap">
     <div class="center mb">${mono(true)}<h1 class="bar-title">Staff sign-in</h1></div>
-    <form class="panel" id="lf" autocomplete="off" novalidate>
-      <span class="label" style="margin-top:0">Station</span>
-      <div class="seg" id="seg" role="radiogroup">${roles.map(([k, l]) => `<button type="button" role="radio" aria-checked="${k === role}" data-r="${k}" class="${k === role ? 'on' : ''}">${l}</button>`).join('')}</div>
-      <label class="label" for="ln">Your name</label>
-      <input class="input" id="ln" maxlength="40" value="${esc(store.get('mj_lastname') || '')}" autocomplete="name">
-      <label class="label" for="lp">Passcode</label>
-      <input class="input" id="lp" type="password" autocomplete="current-password">
-      <p class="err" id="le" role="alert"></p>
-      <button class="btn block" id="lb" type="submit">Sign in</button>
-    </form></div>`;
-  $('#seg').onclick = e => {
-    const b = e.target.closest('[data-r]'); if (!b) return;
-    role = b.dataset.r;
-    document.querySelectorAll('#seg [data-r]').forEach(x => { const on = x === b; x.classList.toggle('on', on); x.setAttribute('aria-checked', on); });
-  };
-  $('#lf').onsubmit = async e => {
-    e.preventDefault();
-    const staff = $('#ln').value.trim(), pin = $('#lp').value;
-    if (!staff) return void ($('#le').textContent = 'Enter your name so scans show who checked each guest.');
-    if (!pin) return void ($('#le').textContent = 'Enter the passcode for this station.');
-    $('#lb').disabled = true; $('#lb').textContent = 'Signing in…'; $('#le').textContent = '';
-    try {
-      const j = await api('login', { role, staff, pin });
-      store.set('mj_session', { session: j.session, role: j.role, staff: j.staff });
-      store.set('mj_lastrole', role); store.set('mj_lastname', staff);
-      location.hash = j.role === 'ADMIN' ? '#admin' : '#scan-' + j.role.toLowerCase();
-    } catch (err) {
-      $('#le').textContent = err.message; $('#lb').disabled = false; $('#lb').textContent = 'Sign in';
-    }
-  };
-}
-
-async function signOut() {
-  const s = session(); store.del('mj_session');
-  if (s) api('logout', { session: s.session }).catch(() => {});
-  location.hash = '#staff';
-}
-
-/* ======================= scanner ======================= */
-const MODES = {
-  fabric: { title: 'Aso Ebi collection', ok: 'Hand over fabric', used: 'Fabric already collected', verb: 'Mark collected' },
-  entry: { title: 'Wedding entry', ok: 'Welcome in', used: 'Already checked in', verb: 'Check in' }
-};
-const cam = { stream: null, raf: 0, busy: false, key: '', keyAt: 0, mode: 'entry', canvas: null, ctx: null, lastTick: 0, audio: null, count: 0 };
-
-function viewScanner(mode) {
-  const s = session(); const M = MODES[mode];
-  cam.mode = mode; cam.busy = false; cam.count = 0;
-  app.innerHTML = `<div class="wrap">
-    <header class="bar">
-      <div><p class="bar-who">Signed in as ${esc(s.staff)}</p><h1 class="bar-title">${M.title}</h1></div>
-      <button class="btn ghost sm" id="out">Sign out</button>
-    </header>
-    ${s.role === 'ADMIN' ? `<nav class="seg mb"><a href="#scan-fabric" class="${mode === 'fabric' ? 'on' : ''}">Fabric</a><a href="#scan-entry" class="${mode === 'entry' ? 'on' : ''}">Entry</a><a href="#admin">Dashboard</a></nav>` : ''}
-    <div class="viewport">
-      <video id="video" playsinline muted autoplay></video>
-      <div class="reticle" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
-      <div class="start" id="start"><button class="btn" id="go">Start scanning</button>
-
-<script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
-<script>
-'use strict';
-
-/* ======================= CONFIG ======================= */
-// Paste your Apps Script web app URL here (Deploy → Web app → URL ending in /exec).
-const API_URL = 'https://script.google.com/macros/s/AKfycbyPmGD7rRzsysSMls94JOj59AMpmdElWocKoiR4wQwic2JWDSVHWWhFlBZhGS3wMBRJmg/exec';
-const JSQR_URL = 'https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js';
-const EVENT = { date: 'Thursday 25 March 2027', venue: 'Meridian Grand, London' };
-/* ====================================================== */
-
-const $ = (s, el = document) => el.querySelector(s);
-const app = $('#app');
-const esc = v => String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-const store = {
-  get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } },
-  set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} },
-  del(k) { try { localStorage.removeItem(k); } catch (e) {} }
-};
-const session = () => store.get('mj_session');
-let timers = [], adminPoll = null;
-const later = (fn, ms) => { timers.push(setTimeout(fn, ms)); };
-
-function toast(msg) {
-  let t = $('#toast');
-  if (!t) { t = document.createElement('div'); t.id = 'toast'; t.className = 'toast'; t.setAttribute('role', 'status'); document.body.appendChild(t); }
-  t.textContent = msg; t.classList.add('on');
-  clearTimeout(t._h); t._h = setTimeout(() => t.classList.remove('on'), 2800);
-}
-
-async function api(action, data) {
-  if (!/^https:\/\//.test(API_URL)) throw Object.assign(new Error('Not connected yet: set API_URL in index.html'), { code: 'CONFIG' });
-  let res, j;
-  try { res = await fetch(API_URL, { method: 'POST', body: JSON.stringify(Object.assign({ action }, data || {})) }); }
-  catch (e) { throw Object.assign(new Error('No connection. Check signal or Wi-Fi and try again.'), { code: 'NETWORK' }); }
-  try { j = await res.json(); }
-  catch (e) { throw Object.assign(new Error('Server did not respond properly. Try again.'), { code: 'SERVER' }); }
-  if (!j.ok) throw Object.assign(new Error(j.message || j.error), { code: j.error });
-  return j;
-}
-
-function authFail(e) {
-  if (e.code !== 'SESSION' && e.code !== 'FORBIDDEN') return false;
-  store.del('mj_session'); toast(e.message);
-  if (location.hash === '#staff') route(); else location.hash = '#staff';
-  return true;
-}
-
-const loaded = {};
-function loadScript(src) {
-  if (!loaded[src]) loaded[src] = new Promise((res, rej) => {
-    const s = document.createElement('script'); s.src = src; s.onload = res;
-    s.onerror = () => { delete loaded[src]; rej(new Error('Could not load the scanner. Check connection.')); };
-    document.head.appendChild(s);
-  });
-  return loaded[src];
-}
-
-/* ======================= shared pieces ======================= */
-const crest = () => `<div class="crest" aria-hidden="true">M<em>&amp;</em>J</div>`;
-const heading = () => `${crest()}<p class="pre">The traditional wedding of</p><h1 class="couple">Mary &amp; Joseph</h1>
-  <p class="date">${EVENT.date}</p><p class="venue">${EVENT.venue}</p>`;
-const flourish = () => `<div class="flourish" aria-hidden="true">◆</div>`;
-const shell = inner => `<div class="wrap"><div class="card"><div class="card-inner">${heading()}${flourish()}${inner}</div></div></div>`;
-const loadingView = msg => shell(`<div class="spin"></div><p class="small">${esc(msg)}</p>`);
-const notice = (title, body, extra) => shell(`<p class="lead"><strong>${esc(title)}</strong></p><p class="small mt">${esc(body)}</p>${extra ? `<div class="mt">${extra}</div>` : ''}`);
-
-function qrSvg(text) {
-  const q = qrcode(0, 'Q'); q.addData(text); q.make();
-  const n = q.getModuleCount(); let d = '';
-  for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) d += `M${c} ${r}h1v1h-1z`;
-  return `<svg viewBox="-2 -2 ${n + 4} ${n + 4}" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges" role="img" aria-label="Your personal access QR code">
-    <rect x="-2" y="-2" width="${n + 4}" height="${n + 4}" fill="#F7F0DE"/><path d="${d}" fill="#1A1D12"/></svg>`;
-}
-const cardUrl = t => `${location.origin}${location.pathname}?t=${encodeURIComponent(t)}`;
-function extractToken(text) {
-  const s = String(text || '');
-  const m = s.match(/[?&]t=([a-f0-9]{32})\b/i) || s.match(/^\s*([a-f0-9]{32})\s*$/i);
-  return m ? m[1].toLowerCase() : null;
-}
-
-/* ======================= guest card ======================= */
-function renderCard(g, url, preview) {
-  const meta = [g.table && `Table ${g.table}`, g.pkg].filter(Boolean).map(esc).join(', ');
-  let qr;
-  try { qr = qrSvg(url); } catch (e) { qr = '<p class="small" style="color:#1A1D12">QR could not be drawn. Reload the page.</p>'; }
-  app.innerHTML = `<div class="wrap">
-    <article class="card"><div class="card-inner">
-      ${heading()}${flourish()}
-      <section class="band"><p class="pre">Kindly admit</p><h2 class="guest-name">${esc(g.name)}</h2>${meta ? `<p class="meta">${meta}</p>` : ''}</section>
-      <div class="qr-frame"><div class="qr">${qr}</div></div>
-      <p class="note">Show this code when you collect<br>your Aso Ebi and at the entrance</p>
-      <div class="chips">
-        <span class="chip ${g.fabric ? 'done' : ''}">Aso Ebi ${g.fabric ? 'collected' : 'to collect'}</span>
-        <span class="chip ${g.entry ? 'done' : ''}">${g.entry ? 'Checked in' : 'Entry valid'}</span>
-      </div>
-    </div></article>
-    <p class="hint">${preview ? 'Design preview. No guest data is shown.' : 'Take a screenshot so your card opens without signal. It is unique to you, so please do not share it.'}</p>
-  </div>`;
-}
-
-async function viewCard(raw) {
-  const t = String(raw).trim().toLowerCase();
-  const url = cardUrl(t);
-  const cached = store.get('mj_card_' + t);
-  if (cached) renderCard(cached, url); else app.innerHTML = loadingView('Opening your card');
-  try {
-    const j = await api('card', { t });
-    store.set('mj_card_' + t, j.guest);
-    renderCard(j.guest, url);
-  } catch (e) {
-    if (e.code === 'INVALID') {
-      store.del('mj_card_' + t);
-      app.innerHTML = notice('This card is not active', 'If you have paid for your Aso Ebi, please contact the wedding coordinator and they will check your details.');
-    } else if (!cached) {
-      app.innerHTML = notice('Your card could not load', e.message, `<button class="btn" onclick="location.reload()">Try again</button>`);
-    }
-  }
-}
-
-function viewLanding() {
-  app.innerHTML = shell(`<p class="lead">Please open your personal access card using the link sent to you on WhatsApp.</p>`);
-}
-
-/* ======================= staff sign-in ======================= */
-function viewLogin(pref) {
-  const roles = [['FABRIC', 'Fabric'], ['ENTRY', 'Entry'], ['ADMIN', 'Admin']];
-  let role = pref === 'admin' ? 'ADMIN' : (store.get('mj_lastrole') || 'ENTRY');
-  app.innerHTML = `<div class="wrap">
-    <div class="center mb">${crest()}<p class="pre">Mary &amp; Joseph</p><h1 class="bar-title">Staff sign-in</h1></div>
     <form class="panel" id="lf" autocomplete="off" novalidate>
       <span class="label" style="margin-top:0">Station</span>
       <div class="seg" id="seg" role="radiogroup">${roles.map(([k, l]) => `<button type="button" role="radio" aria-checked="${k === role}" data-r="${k}" class="${k === role ? 'on' : ''}">${l}</button>`).join('')}</div>
@@ -815,7 +631,7 @@ function route() {
   const h = location.hash.slice(1);
   window.scrollTo(0, 0);
   if (p.get('t')) return viewCard(p.get('t'));
-  if (p.has('preview')) return renderCard({ name: 'Guest Name', table: '', pkg: 'Aso Ebi package' }, cardUrl('preview'), true);
+  if (p.has('preview')) return renderCard({ name: 'Guest Name', table: '', pkg: '' }, cardUrl('preview'), true);
   if (['staff', 'admin', 'scan-fabric', 'scan-entry'].indexOf(h) === -1) return viewLanding();
   const s = session();
   if (!s) return viewLogin(h);
